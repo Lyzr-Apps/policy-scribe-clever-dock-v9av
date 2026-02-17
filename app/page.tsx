@@ -64,8 +64,8 @@ const SAMPLE_POLICY_DATA: PolicyData = {
   regulation_framework: 'GDPR',
   scope_type: 'Full Policy',
   key_sections: ['Introduction', 'Data Controller', 'Data Collection', 'Legal Basis', 'User Rights', 'Data Retention', 'International Transfers', 'Contact Information'],
-  compliance_notes: 'This policy includes all GDPR-required disclosures including lawful basis for processing, data subject rights, DPO contact details, and international transfer mechanisms. Consider adding specific cookie policy details and third-party processor list as annexes.',
-  revision_suggestions: 'Consider adding: (1) Specific data retention periods per data category, (2) Detailed cookie policy or reference to standalone cookie notice, (3) List of third-party data processors, (4) Automated decision-making disclosure if applicable, (5) Children\'s data handling section if the app may be accessed by minors.'
+  compliance_notes: 'This policy includes all GDPR-required disclosures:\n1. Lawful basis for processing\n2. Data subject rights\n3. DPO contact details\n4. International transfer mechanisms\n\nConsider adding specific cookie policy details and third-party processor list as annexes.',
+  revision_suggestions: 'Consider adding the following improvements:\n(1) Specific data retention periods per data category\n(2) Detailed cookie policy or reference to standalone cookie notice\n(3) List of third-party data processors\n(4) Automated decision-making disclosure if applicable\n(5) Children\'s data handling section if the app may be accessed by minors\n(6) Breach notification procedures and timelines\n(7) Lawful basis mapping for each processing activity\n(8) Data minimization and purpose limitation statements'
 }
 
 // --- Markdown Renderer ---
@@ -81,24 +81,86 @@ function formatInline(text: string): React.ReactNode {
   )
 }
 
+function normalizeListText(text: string): string {
+  // Split inline numbered patterns like "(1) ..., (2) ..." or "1) ... 2) ..." into separate lines
+  // Handle patterns: (1), (2) | 1), 2) | 1., 2. when they appear inline (not at line start)
+  let normalized = text
+
+  // Pattern: "(1) item, (2) item" or "(1) item (2) item"
+  normalized = normalized.replace(/(?:,\s*|\.\s+|\s+)(\(\d+\))\s+/g, '\n$1 ')
+  // Pattern: "1) item, 2) item" or "1) item 2) item"
+  normalized = normalized.replace(/(?:,\s*|\.\s+|\s+)(\d+\))\s+/g, '\n$1 ')
+  // Pattern: inline "1. item, 2. item" (but not at line start and not decimals like "3.5")
+  normalized = normalized.replace(/(?:,\s*|\s{2,})(\d+\.\s+)(?=[A-Z])/g, '\n$1')
+
+  return normalized
+}
+
 function renderMarkdown(text: string): React.ReactNode {
   if (!text) return null
+
+  const normalized = normalizeListText(text)
+
+  const lines = normalized.split('\n')
+  const elements: React.ReactNode[] = []
+  let listItems: { key: number; content: React.ReactNode; type: 'ol' | 'ul' }[] = []
+
+  const flushList = () => {
+    if (listItems.length === 0) return
+    const listType = listItems[0].type
+    if (listType === 'ol') {
+      elements.push(
+        <ol key={`ol-${listItems[0].key}`} className="ml-5 list-decimal space-y-1.5 text-sm text-foreground/90">
+          {listItems.map((item) => (
+            <li key={item.key} className="pl-1 leading-relaxed">{item.content}</li>
+          ))}
+        </ol>
+      )
+    } else {
+      elements.push(
+        <ul key={`ul-${listItems[0].key}`} className="ml-5 list-disc space-y-1.5 text-sm text-foreground/90">
+          {listItems.map((item) => (
+            <li key={item.key} className="pl-1 leading-relaxed">{item.content}</li>
+          ))}
+        </ul>
+      )
+    }
+    listItems = []
+  }
+
+  lines.forEach((line, i) => {
+    if (line.startsWith('### ')) {
+      flushList()
+      elements.push(<h4 key={i} className="font-semibold text-sm mt-4 mb-1 text-foreground">{line.slice(4)}</h4>)
+    } else if (line.startsWith('## ')) {
+      flushList()
+      elements.push(<h3 key={i} className="font-semibold text-base mt-5 mb-2 text-foreground border-b border-border/40 pb-1">{line.slice(3)}</h3>)
+    } else if (line.startsWith('# ')) {
+      flushList()
+      elements.push(<h2 key={i} className="font-bold text-lg mt-6 mb-3 text-foreground">{line.slice(2)}</h2>)
+    } else if (line.startsWith('- ') || line.startsWith('* ')) {
+      if (listItems.length > 0 && listItems[0].type !== 'ul') flushList()
+      listItems.push({ key: i, content: formatInline(line.slice(2)), type: 'ul' })
+    } else if (/^\d+[\.\)]\s/.test(line)) {
+      if (listItems.length > 0 && listItems[0].type !== 'ol') flushList()
+      listItems.push({ key: i, content: formatInline(line.replace(/^\d+[\.\)]\s*/, '')), type: 'ol' })
+    } else if (/^\(\d+\)\s/.test(line)) {
+      if (listItems.length > 0 && listItems[0].type !== 'ol') flushList()
+      listItems.push({ key: i, content: formatInline(line.replace(/^\(\d+\)\s*/, '')), type: 'ol' })
+    } else if (!line.trim()) {
+      flushList()
+      elements.push(<div key={i} className="h-2" />)
+    } else {
+      flushList()
+      elements.push(<p key={i} className="text-sm text-foreground/90">{formatInline(line)}</p>)
+    }
+  })
+
+  flushList()
+
   return (
     <div className="space-y-2 leading-relaxed tracking-wide">
-      {text.split('\n').map((line, i) => {
-        if (line.startsWith('### '))
-          return <h4 key={i} className="font-semibold text-sm mt-4 mb-1 text-foreground">{line.slice(4)}</h4>
-        if (line.startsWith('## '))
-          return <h3 key={i} className="font-semibold text-base mt-5 mb-2 text-foreground border-b border-border/40 pb-1">{line.slice(3)}</h3>
-        if (line.startsWith('# '))
-          return <h2 key={i} className="font-bold text-lg mt-6 mb-3 text-foreground">{line.slice(2)}</h2>
-        if (line.startsWith('- ') || line.startsWith('* '))
-          return <li key={i} className="ml-5 list-disc text-sm text-foreground/90">{formatInline(line.slice(2))}</li>
-        if (/^\d+\.\s/.test(line))
-          return <li key={i} className="ml-5 list-decimal text-sm text-foreground/90">{formatInline(line.replace(/^\d+\.\s/, ''))}</li>
-        if (!line.trim()) return <div key={i} className="h-2" />
-        return <p key={i} className="text-sm text-foreground/90">{formatInline(line)}</p>
-      })}
+      {elements}
     </div>
   )
 }
