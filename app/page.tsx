@@ -28,7 +28,7 @@ import { FiFile, FiUpload, FiCopy, FiDownload, FiPlus, FiMenu, FiChevronDown, Fi
 const AGENT_ID = '699409dfcb4f20e1f49e194e'
 const RAG_ID = '699409c3869797813b09f696'
 
-const REGULATIONS = ['GDPR', 'CCPA', 'LGPD', 'PIPEDA', 'General', 'Custom'] as const
+const REGULATIONS = ['GDPR', 'CCPA', 'LGPD', 'PIPEDA', 'DPDPA', 'General', 'Custom'] as const
 const SCOPES = ['Full Policy', 'Specific Section', 'Amendment Clause'] as const
 
 // --- Interfaces ---
