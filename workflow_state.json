@@ -1,0 +1,12 @@
+{
+  "agents": {
+    "privacy_policy_generator": {
+      "agent_id": "699409dfcb4f20e1f49e194e",
+      "name": "Privacy Policy Generator Agent",
+      "type": "single",
+      "has_knowledge_base": true,
+      "rag_id": "699409c3869797813b09f696"
+    }
+  },
+  "workflow_created": true
+}

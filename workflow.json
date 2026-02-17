@@ -1,0 +1,32 @@
+{
+  "nodes": [
+    {
+      "id": "input_node",
+      "type": "Input",
+      "label": "User Query",
+      "nodeCategory": "input"
+    },
+    {
+      "id": "policy_agent",
+      "type": "Agent",
+      "label": "Privacy Policy Generator Agent",
+      "nodeCategory": "agent"
+    },
+    {
+      "id": "output_node",
+      "type": "Output",
+      "label": "Generated Policy",
+      "nodeCategory": "end"
+    }
+  ],
+  "edges": [
+    {
+      "source": "input_node",
+      "target": "policy_agent"
+    },
+    {
+      "source": "policy_agent",
+      "target": "output_node"
+    }
+  ]
+}

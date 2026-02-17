@@ -1,0 +1,30 @@
+{
+  "agent_name": "Privacy Policy Generator Agent",
+  "agent_id": "699409dfcb4f20e1f49e194e",
+  "description": "Analyzes the user's existing privacy policy via Knowledge Base to understand legal tone, structural format, clause patterns, and terminology. Generates new privacy policy drafts that match the company's established voice, legal precision, and section organization based on user-described scenarios (new regions, features, regulations).",
+  "agent_type": "json",
+  "accessor": "result",
+  "auto_generated": true,
+  "response_schema": {
+    "policy_title": "string",
+    "policy_content": "string",
+    "regulation_framework": "string",
+    "scope_type": "string",
+    "key_sections": [
+      "string"
+    ],
+    "compliance_notes": "string",
+    "revision_suggestions": "string"
+  },
+  "example_response": {
+    "policy_title": "Title of the generated privacy policy or section",
+    "policy_content": "The full generated privacy policy draft text with proper legal formatting",
+    "regulation_framework": "The regulation framework targeted (GDPR, CCPA, LGPD, PIPEDA, General, or Custom)",
+    "scope_type": "The scope of generation: Full Policy, Specific Section, or Amendment Clause",
+    "key_sections": [
+      "sample string"
+    ],
+    "compliance_notes": "Notes on compliance considerations, regulatory requirements met, and any caveats",
+    "revision_suggestions": "Suggestions for areas that may need further review or customization"
+  }
+}

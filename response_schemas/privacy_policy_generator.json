@@ -1,0 +1,18 @@
+{
+  "agent_name": "Privacy Policy Generator Agent",
+  "agent_id": "699409dfcb4f20e1f49e194e",
+  "agent_type": "json",
+  "accessor": "json",
+  "has_knowledge_base": true,
+  "rag_id": "699409c3869797813b09f696",
+  "has_module_outputs": false,
+  "response_schema": {
+    "policy_title": "string",
+    "policy_content": "string",
+    "regulation_framework": "string",
+    "scope_type": "string",
+    "key_sections": "array of strings",
+    "compliance_notes": "string",
+    "revision_suggestions": "string"
+  }
+}
